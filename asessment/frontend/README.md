@@ -1,16 +1,87 @@
-# React + Vite
+# Web Scraper Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive web scraping application with frontend and backend components for data extraction and management.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Modern web scraping with headless browser support (Puppeteer)
+- Intelligent site crawling with pagination detection
+- Status tracking (SUCCESS, PARTIAL, BLOCKED, ERROR)
+- Data export to CSV
+- Clean, responsive React frontend
+- RESTful API backend
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Frontend:**
+- React 18 with Vite
+- Tailwind CSS for styling
+- Axios for API calls
 
-## Expanding the ESLint configuration
+**Backend:**
+- Node.js with Express
+- Puppeteer for headless browsing
+- Cheerio for HTML parsing
+- CSV data storage
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Installation
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+
+### Setup
+
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd web-scraper-app
+```
+
+2. Install backend dependencies
+```bash
+cd backend
+npm install
+```
+
+3. Install frontend dependencies
+```bash
+cd ../frontend
+npm install
+```
+
+## Usage
+
+1. Start the backend server:
+```bash
+cd backend
+npm start
+```
+
+2. Start the frontend development server:
+```bash
+cd frontend
+npm run dev
+```
+
+3. Open http://localhost:5173 in your browser
+
+4. Enter a URL to scrape and click "SCRAPE"
+
+## API Endpoints
+
+- `POST /api/scrape` - Start scraping a URL with crawling
+- `GET /api/scraped-data` - Get all scraped data
+- `GET /api/download-csv` - Download scraped data as CSV
+
+## Configuration
+
+The backend includes configurable user agent rotation and proxy support hooks for enhanced scraping capabilities.
+
+## Legal Note
+
+Ensure compliance with website terms of service and robots.txt when scraping websites. This tool is intended for educational and legitimate data collection purposes.
+
+## License
+
+[Add your license here]
