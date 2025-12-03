@@ -1,48 +1,11 @@
-import { useState, useEffect } from "react";
-import { scrapeUrl, getAllScrapedData } from "./api";
+import { useState } from "react";
+import { scrapeUrl } from "./api";
 
 const LandingPage = () => {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [scrapedData, setScrapedData] = useState(null);
-  const [allScrapedData, setAllScrapedData] = useState([]);
   const [error, setError] = useState("");
-
-  const handleDownloadCsv = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/api/download-csv');
-      if (!response.ok) {
-        throw new Error('Failed to download CSV');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'scraped_data.csv';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (err) {
-      console.error('Download error:', err);
-      setError('Failed to download CSV: ' + err.message);
-    }
-  };
-
-  useEffect(() => {
-    const loadAllData = async () => {
-      try {
-        const data = await getAllScrapedData();
-        setAllScrapedData(data);
-      } catch (err) {
-        console.error("Failed to load all scraped data:", err);
-        setAllScrapedData([]);
-      }
-    };
-    loadAllData();
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,14 +17,6 @@ const LandingPage = () => {
       const data = await scrapeUrl(url);
       setScrapedData(data);
       console.log("Scraped data:", data);
-      // Refresh all scraped data
-      try {
-        const allData = await getAllScrapedData();
-        setAllScrapedData(allData);
-      } catch (refreshErr) {
-        console.error("Failed to refresh data:", refreshErr);
-        setAllScrapedData([]);
-      }
     } catch (err) {
       console.error("Scrape error:", err);
       setError(err.message);
@@ -175,105 +130,7 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* All Scraped Data Table */}
-      {allScrapedData.length > 0 && (
-        <div className="container mx-auto px-4 py-16">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">
-              All Scraped Data
-            </h2>
-            <button
-              onClick={handleDownloadCsv}
-              className="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-            >
-              Download CSV
-            </button>
-          </div>
-          <div className="overflow-x-auto bg-white rounded-lg shadow-md">
-            <table className="w-full table-auto">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    URL
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Title
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    H1
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Timestamp
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Links Count
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {allScrapedData
-                  .filter(data => data && typeof data === 'object' && 'url' in data)
-                  .map((data, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <a
-                          href={data.url}
-                          className="text-blue-600 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title={data.url}
-                        >
-                          {data.url.length > 50
-                            ? `${data.url.substring(0, 50)}...`
-                            : data.url}
-                        </a>
-                      </td>
-                      <td
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate"
-                        title={data.title}
-                      >
-                        {data.title}
-                      </td>
-                      <td
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate"
-                        title={data.h1}
-                      >
-                        {data.h1}
-                      </td>
-                      <td
-                        className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate"
-                        title={data.metaDescription}
-                      >
-                        {data.metaDescription}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(data.timestamp).toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {data.links && Array.isArray(data.links) && data.links.length > 0 ? (
-                          <ul className="list-disc list-inside">
-                            {data.links.slice(0, 3).map(link => (
-                              <li key={link.href}>
-                                <a href={link.href} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
-                                  {link.href.length > 30 ? `${link.href.substring(0, 30)}...` : link.href}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No links found</p>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };
